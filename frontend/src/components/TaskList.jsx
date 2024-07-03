@@ -1,27 +1,36 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { getAllTasks, deleteTask } from "../api";
 
-const TaskList = ({ tasks }) => (
-  <div>
-    <Link
-      to="/task/new"
-      className="bg-blue-500 text-white p-2 rounded mb-4 inline-block"
-    >
-      Add Task
-    </Link>
-    <ul className="list-none p-0">
-      {tasks.map((task) => (
-        <li key={task._id} className="mb-2">
-          <Link
-            to={`/task/${task._id}`}
-            className="text-blue-500 hover:underline"
-          >
-            {task.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+const TaskList = () => {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    const response = await getAllTasks();
+    setTasks(response.data);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteTask(id);
+    fetchTasks();
+  };
+
+  return (
+    <div>
+      <h2>Task List</h2>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task._id}>
+            {task.title} - {task.status}
+            <button onClick={() => handleDelete(task._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default TaskList;

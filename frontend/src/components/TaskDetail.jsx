@@ -1,19 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getTaskById } from "../api";
 
-const TaskDetail = ({ task, onEdit, onDelete }) => (
-  <div>
-    <h1 className="text-3xl font-bold mb-4">{task?.title}</h1>
-    <p className="mb-4">{task?.description}</p>
-    <button
-      className="bg-yellow-500 text-white p-2 rounded mr-2"
-      onClick={onEdit}
-    >
-      Edit
-    </button>
-    <button className="bg-red-500 text-white p-2 rounded" onClick={onDelete}>
-      Delete
-    </button>
-  </div>
-);
+const TaskDetail = ({ match }) => {
+  const [task, setTask] = useState(null);
+
+  useEffect(() => {
+    fetchTask();
+  });
+
+  const fetchTask = async () => {
+    const response = await getTaskById(match.params.id);
+    setTask(response.data);
+  };
+
+  if (!task) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h2>{task.title}</h2>
+      <p>{task.description}</p>
+      <p>Status: {task.status}</p>
+    </div>
+  );
+};
 
 export default TaskDetail;

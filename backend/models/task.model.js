@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema(
   {
+    taskId: {
+      type: Number,
+      unique: true,
+    },
     title: {
       type: String,
       required: true,
@@ -14,9 +18,9 @@ const taskSchema = new mongoose.Schema(
       enum: ["pending", "in-progress", "completed"],
       default: "pending",
     },
-    created_at: {
+    dueDate: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
   },
   { timestamps: true }

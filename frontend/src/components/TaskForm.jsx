@@ -1,54 +1,55 @@
 import React, { useState } from "react";
+import { createTask, updateTask } from "../api";
+import { useNavigate } from "react-router-dom";
 
-const TaskForm = ({ task = {}, onSubmit }) => {
-  const [title, setTitle] = useState(task.title || "");
-  const [description, setDescription] = useState(task.description || "");
-  const [status, setStatus] = useState(task.status || "");
+const TaskForm = ({ existingTask }) => {
+  const [title, setTitle] = useState(existingTask ? existingTask.title : "");
+  const [description, setDescription] = useState(
+    existingTask ? existingTask.description : ""
+  );
+  const [status, setStatus] = useState(existingTask ? existingTask.status : "");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({ title, description, status });
+    const task = { title, description, status };
+
+    if (existingTask && existingTask._id) {
+      await updateTask(existingTask._id, task);
+    } else {
+      await createTask(task);
+    }
+
+    navigate("/");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg">
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Title
-        </label>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Title:</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Description
-        </label>
-        <textarea
+      <div>
+        <label>Description:</label>
+        <input
+          type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Status
-        </label>
-        <select
+      <div>
+        <label>Status:</label>
+        <input
+          type="text"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
+        />
       </div>
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Save
-      </button>
+      <button type="submit">Save</button>
     </form>
   );
 };
